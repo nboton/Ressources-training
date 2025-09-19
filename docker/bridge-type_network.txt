@@ -18,3 +18,396 @@
 
 9- test if ubuntu1 and ubuntu2 are networked
    - still in the ubuntu1 container type: ping ubuntu2
+   
+   
+ log terminal***************************************************************
+ root@nounagnon-pc:/home/nounagnon/webapp# docker network create --driver=bridge --subnet=192.168.2.0/24 sharenetwork
+246a6c03f21a4767c7b62a8d34349689e9b1f69cae3bff6fb68e0c1efa862063
+root@nounagnon-pc:/home/nounagnon/webapp# docker network ls
+NETWORK ID     NAME           DRIVER    SCOPE
+d7e3ecd1342f   bridge         bridge    local
+4ac4d76f0f6f   hadoop         bridge    local
+f6267e9935eb   host           host      local
+51ee4398b9dd   none           null      local
+246a6c03f21a   sharenetwork   bridge    local
+root@nounagnon-pc:/home/nounagnon/webapp# docker images
+REPOSITORY                  TAG        IMAGE ID       CREATED         SIZE
+webapp                      v1         2245ed5408bb   32 hours ago    257MB
+nboton/webapp-nounagnon     v1         2245ed5408bb   32 hours ago    257MB
+nboton/webapp-test          v1         2245ed5408bb   32 hours ago    257MB
+oboton/webapp-test          v1         2245ed5408bb   32 hours ago    257MB
+webapp                      vi         2803d330a5a0   32 hours ago    257MB
+nginx                       latest     41f689c20910   5 weeks ago     192MB
+ubuntu                      latest     59ab366372d5   11 months ago   78.1MB
+liliasfaxi/hadoop-cluster   latest     b90f134f6fcd   13 months ago   4.92GB
+hello-world                 latest     d2c94e258dcb   2 years ago     13.3kB
+liliasfaxi/spark-hadoop     hv-2.7.2   d64a47823a96   6 years ago     1.94GB
+root@nounagnon-pc:/home/nounagnon/webapp# docker run -it name ubuntu1 --sharenetwork -d ubuntu /bin/bash
+Unable to find image 'name:latest' locally
+docker: Error response from daemon: pull access denied for name, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
+
+Run 'docker run --help' for more information
+root@nounagnon-pc:/home/nounagnon/webapp# doker login
+La commande « doker » n'a pas été trouvée, voulez-vous dire :
+  commande « docker » du snap docker (28.1.1+1)
+  commande « docker » du deb docker.io (27.5.1-0ubuntu3~24.04.2)
+  commande « docker » du deb podman-docker (4.9.3+ds1-1ubuntu0.2)
+Voir « snap info <nomdusnap> » pour des versions supplémentaires.
+root@nounagnon-pc:/home/nounagnon/webapp# docker login
+Authenticating with existing credentials... [Username: nboton]
+
+i Info → To login with a different account, run 'docker logout' followed by 'docker login'
+
+
+Login Succeeded
+root@nounagnon-pc:/home/nounagnon/webapp# docker run -it name ubuntu1 --sharenetwork -d ubuntu /bin/bash
+Unable to find image 'name:latest' locally
+docker: Error response from daemon: pull access denied for name, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
+
+Run 'docker run --help' for more information
+root@nounagnon-pc:/home/nounagnon/webapp# docker run -it name ubuntu1 --network sharenetwork -d ubuntu /bin/bash
+Unable to find image 'name:latest' locally
+docker: Error response from daemon: pull access denied for name, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
+
+Run 'docker run --help' for more information
+root@nounagnon-pc:/home/nounagnon/webapp# docker run -it --name ubuntu1 --network sharenetwork -d ubuntu /bin/bash
+5bb6cf2511f201d5bf420383a8db0c78b220a00318ddabd1d49ac35fbcba908a
+root@nounagnon-pc:/home/nounagnon/webapp# docker run -it --name ubuntu2 --network sharenetwork -d ubuntu /bin/bash
+38f2fe3aa143d3fd7b72c3d1681f60c049649c041fd0a71d01c0034f2b57758e
+root@nounagnon-pc:/home/nounagnon/webapp# docker ps
+CONTAINER ID   IMAGE       COMMAND                  CREATED          STATUS          PORTS                                     NAMES
+38f2fe3aa143   ubuntu      "/bin/bash"              28 seconds ago   Up 27 seconds                                             ubuntu2
+5bb6cf2511f2   ubuntu      "/bin/bash"              52 seconds ago   Up 51 seconds                                             ubuntu1
+09a0f4094ade   webapp:vi   "/usr/sbin/nginx -g …"   21 hours ago     Up 21 hours     0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   webapp1
+root@nounagnon-pc:/home/nounagnon/webapp# docker inspect ubuntu1
+[
+    {
+        "Id": "5bb6cf2511f201d5bf420383a8db0c78b220a00318ddabd1d49ac35fbcba908a",
+        "Created": "2025-09-19T14:34:53.814816422Z",
+        "Path": "/bin/bash",
+        "Args": [],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 96703,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2025-09-19T14:34:53.90419878Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+        },
+        "Image": "sha256:59ab366372d56772eb54e426183435e6b0642152cb449ec7ab52473af8ca6e3f",
+        "ResolvConfPath": "/var/lib/docker/containers/5bb6cf2511f201d5bf420383a8db0c78b220a00318ddabd1d49ac35fbcba908a/resolv.conf",
+        "HostnamePath": "/var/lib/docker/containers/5bb6cf2511f201d5bf420383a8db0c78b220a00318ddabd1d49ac35fbcba908a/hostname",
+        "HostsPath": "/var/lib/docker/containers/5bb6cf2511f201d5bf420383a8db0c78b220a00318ddabd1d49ac35fbcba908a/hosts",
+        "LogPath": "/var/lib/docker/containers/5bb6cf2511f201d5bf420383a8db0c78b220a00318ddabd1d49ac35fbcba908a/5bb6cf2511f201d5bf420383a8db0c78b220a00318ddabd1d49ac35fbcba908a-json.log",
+        "Name": "/ubuntu1",
+        "RestartCount": 0,
+        "Driver": "overlay2",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "docker-default",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": null,
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+            },
+            "NetworkMode": "sharenetwork",
+            "PortBindings": {},
+            "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                43,
+                184
+            ],
+            "CapAdd": null,
+            "CapDrop": null,
+            "CgroupnsMode": "private",
+            "Dns": [],
+            "DnsOptions": [],
+            "DnsSearch": [],
+            "ExtraHosts": null,
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": null,
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 0,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": [],
+            "BlkioDeviceReadBps": [],
+            "BlkioDeviceWriteBps": [],
+            "BlkioDeviceReadIOps": [],
+            "BlkioDeviceWriteIOps": [],
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": [],
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 0,
+            "MemorySwap": 0,
+            "MemorySwappiness": null,
+            "OomKillDisable": null,
+            "PidsLimit": null,
+            "Ulimits": [],
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [
+                "/proc/asound",
+                "/proc/acpi",
+                "/proc/interrupts",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/sys/firmware",
+                "/sys/devices/virtual/powercap",
+                "/sys/devices/system/cpu/cpu0/thermal_throttle",
+                "/sys/devices/system/cpu/cpu1/thermal_throttle",
+                "/sys/devices/system/cpu/cpu2/thermal_throttle",
+                "/sys/devices/system/cpu/cpu3/thermal_throttle"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "GraphDriver": {
+            "Data": {
+                "ID": "5bb6cf2511f201d5bf420383a8db0c78b220a00318ddabd1d49ac35fbcba908a",
+                "LowerDir": "/var/lib/docker/overlay2/b3737d707e08bd31462b13629a4fc4727b07663d1bdba6758330a0874df03034-init/diff:/var/lib/docker/overlay2/6456884bd79c51d23bfeb19fe6be7609f2362e849fb859c063f68da1a3c90185/diff",
+                "MergedDir": "/var/lib/docker/overlay2/b3737d707e08bd31462b13629a4fc4727b07663d1bdba6758330a0874df03034/merged",
+                "UpperDir": "/var/lib/docker/overlay2/b3737d707e08bd31462b13629a4fc4727b07663d1bdba6758330a0874df03034/diff",
+                "WorkDir": "/var/lib/docker/overlay2/b3737d707e08bd31462b13629a4fc4727b07663d1bdba6758330a0874df03034/work"
+            },
+            "Name": "overlay2"
+        },
+        "Mounts": [],
+        "Config": {
+            "Hostname": "5bb6cf2511f2",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "Tty": true,
+            "OpenStdin": true,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+            ],
+            "Cmd": [
+                "/bin/bash"
+            ],
+            "Image": "ubuntu",
+            "Volumes": null,
+            "WorkingDir": "",
+            "Entrypoint": null,
+            "OnBuild": null,
+            "Labels": {
+                "org.opencontainers.image.ref.name": "ubuntu",
+                "org.opencontainers.image.version": "24.04"
+            }
+        },
+        "NetworkSettings": {
+            "Bridge": "",
+            "SandboxID": "3e221b3847572bd5a096bc6dbcd5973db08fc49a6e24cdbf00e02d8eaf973b29",
+            "SandboxKey": "/var/run/docker/netns/3e221b384757",
+            "Ports": {},
+            "HairpinMode": false,
+            "LinkLocalIPv6Address": "",
+            "LinkLocalIPv6PrefixLen": 0,
+            "SecondaryIPAddresses": null,
+            "SecondaryIPv6Addresses": null,
+            "EndpointID": "",
+            "Gateway": "",
+            "GlobalIPv6Address": "",
+            "GlobalIPv6PrefixLen": 0,
+            "IPAddress": "",
+            "IPPrefixLen": 0,
+            "IPv6Gateway": "",
+            "MacAddress": "",
+            "Networks": {
+                "sharenetwork": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": null,
+                    "MacAddress": "3a:c4:92:20:47:91",
+                    "DriverOpts": null,
+                    "GwPriority": 0,
+                    "NetworkID": "246a6c03f21a4767c7b62a8d34349689e9b1f69cae3bff6fb68e0c1efa862063",
+                    "EndpointID": "0db6a67b28a6e67c3abdf1478fb4bab2c0f3d258a0e9706f7e190cf7415ef9f8",
+                    "Gateway": "192.168.2.1",
+                    "IPAddress": "192.168.2.2",
+                    "IPPrefixLen": 24,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": [
+                        "ubuntu1",
+                        "5bb6cf2511f2"
+                    ]
+                }
+            }
+        }
+    }
+]
+root@nounagnon-pc:/home/nounagnon/webapp# docker exec -it ubuntu1 /bin/bash
+root@5bb6cf2511f2:/# ping ubuntu2
+bash: ping: command not found
+root@5bb6cf2511f2:/# apt-get update && apt-get
+Get:1 http://archive.ubuntu.com/ubuntu noble InRelease [256 kB]
+Get:2 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Get:3 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Get:4 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1136 kB]
+Get:5 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Get:6 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages [1808 kB]
+Get:7 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages [1439 kB]
+Get:8 http://archive.ubuntu.com/ubuntu noble/restricted amd64 Packages [117 kB]            
+Get:9 http://archive.ubuntu.com/ubuntu noble/universe amd64 Packages [19.3 MB]           
+Get:10 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [2306 kB]
+Get:11 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [34.6 kB]  
+Get:12 http://archive.ubuntu.com/ubuntu noble/multiverse amd64 Packages [331 kB]             
+Get:13 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1922 kB]
+Get:14 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1793 kB]
+Get:15 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [2414 kB]
+Get:16 http://archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [38.9 kB]
+Get:17 http://archive.ubuntu.com/ubuntu noble-backports/universe amd64 Packages [35.6 kB]
+Get:18 http://archive.ubuntu.com/ubuntu noble-backports/main amd64 Packages [48.8 kB]
+Fetched 33.4 MB in 3s (9631 kB/s)
+Reading package lists... Done
+apt 2.7.14 (amd64)
+Usage: apt-get [options] command
+       apt-get [options] install|remove pkg1 [pkg2 ...]
+       apt-get [options] source pkg1 [pkg2 ...]
+
+apt-get is a command line interface for retrieval of packages
+and information about them from authenticated sources and
+for installation, upgrade and removal of packages together
+with their dependencies.
+
+Most used commands:
+  update - Retrieve new lists of packages
+  upgrade - Perform an upgrade
+  install - Install new packages (pkg is libc6 not libc6.deb)
+  reinstall - Reinstall packages (pkg is libc6 not libc6.deb)
+  remove - Remove packages
+  purge - Remove packages and config files
+  autoremove - Remove automatically all unused packages
+  dist-upgrade - Distribution upgrade, see apt-get(8)
+  dselect-upgrade - Follow dselect selections
+  build-dep - Configure build-dependencies for source packages
+  satisfy - Satisfy dependency strings
+  clean - Erase downloaded archive files
+  autoclean - Erase old downloaded archive files
+  check - Verify that there are no broken dependencies
+  source - Download source archives
+  download - Download the binary package into the current directory
+  changelog - Download and display the changelog for the given package
+
+See apt-get(8) for more information about the available commands.
+Configuration options and syntax is detailed in apt.conf(5).
+Information about how to configure sources can be found in sources.list(5).
+Package and version choices can be expressed via apt_preferences(5).
+Security details are available in apt-secure(8).
+                                        This APT has Super Cow Powers.
+root@5bb6cf2511f2:/# install && apt-get install iputils-ping
+install: missing file operand
+Try 'install --help' for more information.
+root@5bb6cf2511f2:/# apt-get install iputils-ping
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following additional packages will be installed:
+  libcap2 libcap2-bin libpam-cap
+The following NEW packages will be installed:
+  iputils-ping libcap2-bin libpam-cap
+The following packages will be upgraded:
+  libcap2
+1 upgraded, 3 newly installed, 0 to remove and 41 not upgraded.
+Need to get 121 kB of archives.
+After this operation, 323 kB of additional disk space will be used.
+Do you want to continue? [Y/n] y
+Get:1 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libcap2 amd64 1:2.66-5ubuntu2.2 [30.0 kB]
+Get:2 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libcap2-bin amd64 1:2.66-5ubuntu2.2 [34.2 kB]
+Get:3 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 iputils-ping amd64 3:20240117-1ubuntu0.1 [44.6 kB]
+Get:4 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libpam-cap amd64 1:2.66-5ubuntu2.2 [12.5 kB]
+Fetched 121 kB in 1s (214 kB/s)      
+debconf: delaying package configuration, since apt-utils is not installed
+(Reading database ... 4379 files and directories currently installed.)
+Preparing to unpack .../libcap2_1%3a2.66-5ubuntu2.2_amd64.deb ...
+Unpacking libcap2:amd64 (1:2.66-5ubuntu2.2) over (1:2.66-5ubuntu2) ...
+Setting up libcap2:amd64 (1:2.66-5ubuntu2.2) ...
+Selecting previously unselected package libcap2-bin.
+(Reading database ... 4379 files and directories currently installed.)
+Preparing to unpack .../libcap2-bin_1%3a2.66-5ubuntu2.2_amd64.deb ...
+Unpacking libcap2-bin (1:2.66-5ubuntu2.2) ...
+Selecting previously unselected package iputils-ping.
+Preparing to unpack .../iputils-ping_3%3a20240117-1ubuntu0.1_amd64.deb ...
+Unpacking iputils-ping (3:20240117-1ubuntu0.1) ...
+Selecting previously unselected package libpam-cap:amd64.
+Preparing to unpack .../libpam-cap_1%3a2.66-5ubuntu2.2_amd64.deb ...
+Unpacking libpam-cap:amd64 (1:2.66-5ubuntu2.2) ...
+Setting up libcap2-bin (1:2.66-5ubuntu2.2) ...
+Setting up libpam-cap:amd64 (1:2.66-5ubuntu2.2) ...
+debconf: unable to initialize frontend: Dialog
+debconf: (No usable dialog-like program is installed, so the dialog based frontend cannot be used. at /usr/share/perl5/Debconf/FrontEnd/Dialog.pm line 79.)
+debconf: falling back to frontend: Readline
+debconf: unable to initialize frontend: Readline
+debconf: (Can't locate Term/ReadLine.pm in @INC (you may need to install the Term::ReadLine module) (@INC entries checked: /etc/perl /usr/local/lib/x86_64-linux-gnu/perl/5.38.2 /usr/local/share/perl/5.38.2 /usr/lib/x86_64-linux-gnu/perl5/5.38 /usr/share/perl5 /usr/lib/x86_64-linux-gnu/perl-base /usr/lib/x86_64-linux-gnu/perl/5.38 /usr/share/perl/5.38 /usr/local/lib/site_perl) at /usr/share/perl5/Debconf/FrontEnd/Readline.pm line 8.)
+debconf: falling back to frontend: Teletype
+Setting up iputils-ping (3:20240117-1ubuntu0.1) ...
+Processing triggers for libc-bin (2.39-0ubuntu8.3) ...
+root@5bb6cf2511f2:/# ping ubuntu2
+PING ubuntu2 (192.168.2.3) 56(84) bytes of data.
+64 bytes from ubuntu2.sharenetwork (192.168.2.3): icmp_seq=1 ttl=64 time=0.167 ms
+64 bytes from ubuntu2.sharenetwork (192.168.2.3): icmp_seq=2 ttl=64 time=0.085 ms
+64 bytes from ubuntu2.sharenetwork (192.168.2.3): icmp_seq=3 ttl=64 time=0.089 ms
+64 bytes from ubuntu2.sharenetwork (192.168.2.3): icmp_seq=4 ttl=64 time=0.093 ms
+64 bytes from ubuntu2.sharenetwork (192.168.2.3): icmp_seq=5 ttl=64 time=0.087 ms
+64 bytes from ubuntu2.sharenetwork (192.168.2.3): icmp_seq=6 ttl=64 time=0.089 ms
+64 bytes from ubuntu2.sharenetwork (192.168.2.3): icmp_seq=7 ttl=64 time=0.091 ms
+64 bytes from ubuntu2.sharenetwork (192.168.2.3): icmp_seq=8 ttl=64 time=0.089 ms
+^C
+--- ubuntu2 ping statistics ---
+8 packets transmitted, 8 received, 0% packet loss, time 7153ms
+rtt min/avg/max/mdev = 0.085/0.098/0.167/0.025 ms
+root@5bb6cf2511f2:/# 
+
