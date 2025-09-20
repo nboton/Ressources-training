@@ -1,0 +1,76 @@
+# Private Docker Registry Setup and Image Management
+url of registre adresse:https://hub.docker.com/_/registry
+I perfom this Task on docker lab URL: https://docker.labs.eazytraining.fr/
+				login: devops
+				mot de passe: devops
+
+This guide outlines the steps to set up a private Docker registry with a user interface, and how to pull, tag, and push Docker images both locally and from a remote machine.
+
+ 1. Create the Docker Network `eazy`
+To create a Docker network named `eazy`:
+
+```bash
+docker network create eazy
+
+2. Start the registry-eazy Service (Docker Registry)
+Run a simple Docker registry service on port 5000:
+
+docker run -d \
+  -p 5000:5000 \
+  --net eazy \
+  --name registry-eazy \
+  registry:2.8.1
+
+
+3. Start the frontend-eazy Service (Docker Registry UI)
+Start the Docker Registry UI to manage the registry. This command creates a frontend accessible via port 8090
+
+docker run -d \
+  -p 8090:80 \
+  --net eazy \
+  -e NGINX_PROXY_PASS_URL=http://registry-eazy:5000 \
+  -e DELETE_IMAGES=true \
+  -e REGISTRY_TITLE=eazytraining \
+  --name frontend-eazy \
+  joxit/docker-registry-ui:2
+  
+- go to web browser to see the page with port 8090
+4. Pull the nginx Image from Docker Hub
+First, pull the nginx image from Docker Hub to your local machine
+
+docker pull nginx:latest
+
+5. Tag the nginx Image for the Local Registry
+Next, tag the nginx image to associate it with your private registry (running on localhost:5000 locally):
+Display docker images: docker images
+tag docker image: docker tag IMAGE_ID localhost:5000/nginx:local
+
+6. Push the nginx Image to the Local Registry
+Now, push the tagged image to your local registry:
+
+docker push localhost:5000/nginx:local
+- go to web browser to see the page with port 8090, the image appear with "local" tag
+
+7. Push the Image from a Remote Machine
+Remote Preparation:
+To push the image from a remote machine, ensure that the remote machine has access to your private registry, either via a domain name, an IP address, or port forwarding.
+
+On the Remote Machine:
+Assume the IP address of your local machine where the registry is running is <IP_REGISTRY_LOCAL>. You will use this IP on the remote machine to tag and push the image.
+
+Steps on the Remote Machine:
+1. Pull the nginx Image on the Remote Machine:
+
+docker pull nginx:latest
+
+2. Tag the Image for the Remote Registry:
+Assume your local registry runs on a machine with the IP address <IP_REGISTRY_LOCAL>. Tag the image using this IP:
+
+docker tag nginx:latest <IP_REGISTRY_LOCAL>:5000/nginx:latest (ex:docker tag 41f689c20910 ip10-0-34-4-d37fsuu57ed000f3mm9g-5000.direct.docker.labs.eazytraining.fr/nginx:remote)
+
+3. Push the Image to the Remote Registry:
+Finally, push the image to the registry running on the local machine (remotely):
+
+docker push <IP_REGISTRY_LOCAL>:5000/nginx:latest(ex:docker push ip10-0-34-4-d37fsuu57ed000f3mm9g-5000.direct.docker.labs.eazytraining.fr/nginx:remote)
+
+- go to web browser to see the page with port 8090, the image appear with "local" tag
