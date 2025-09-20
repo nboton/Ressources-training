@@ -1,0 +1,25 @@
+# Cluster installation with one master and one node
+    I use this website to practice this exercie:URL: 
+        https://docker.labs.eazytraining.fr/
+        login: devops
+        mot de passe: devops
+
+
+  - Initialize the cluster on master: docker swarm init --advertise-addr MASTER_IP_ADRESSE(ex:10.0.5.3)
+  - Add the worker to the cluster by typing this command from the worker:  docker swarm join --token TOKEN_ID IP_ADRESSE:2377 
+  - Verify on master: docker node ls
+
+# deploy the voting management application
+  - got to this github:https://github.com/dockersamples/example-voting-app#   
+  - on the master node, clone git :git clone https://github.com/dockersamples/example-voting-app.git or ssh:git clone git@github.com:dockersamples/example-voting-app.git
+  - Read the docker-stack.yml. the configurations are in this file.
+  - retrieve code: cd example-voting-app
+  - launch stack creation on master: docker stack deploy -c docker-stack.yml vote-stack
+  - verify: docker stack ls
+            docker stack ps vote-stack
+
+  - Test application on browser: vote: 192.168.99.10:5000
+                                 result: 192.168.99.10:5001
+                                 
+   -the used port are in docker-stack.yml  port:8080
+                                           port:8081
